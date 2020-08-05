@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const exercisesRouter = require("./routes/exercises");
 const usersRouter = require("./routes/users");
+const path = require("path");
 
 require("dotenv").config;
 
@@ -24,6 +25,13 @@ mongoose
   .connect(uri, { useNewUrlParser: true, useCreateIndex: true })
   .then(() => console.log("MongoDb is connected..."))
   .catch((err) => console.log(err));
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
